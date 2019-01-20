@@ -1,8 +1,8 @@
 const { Client, Schema, util: { mergeDefault } } = require('klasa');
 const { CLIENT } = require('./util/constants');
-const MemberGateway = require('./settings/MemberGateway');
+const TextChannelGateway = require('./settings/GatewayTextChannel');
 
-Client.defaultMemberSchema = new Schema();
+Client.defaultTextChannelSchema = new Schema();
 
 module.exports = class extends Client {
 
@@ -13,12 +13,12 @@ module.exports = class extends Client {
 
 	static [Client.plugin]() {
 		mergeDefault(CLIENT, this.options);
-		const { members } = this.options.gateways;
-		const memberSchema = 'schema' in members ? members.schema : this.constructor.defaultMemberSchema;
+		const { channels } = this.options.gateways;
+		const channelSchema = 'schema' in channels ? channels.schema : this.constructor.defaultTextChannelSchema;
 
-		this.gateways.members = new MemberGateway(this.gateways, 'members', memberSchema, members.provider || this.options.providers.default);
-		this.gateways.keys.add('members');
-		this.gateways._queue.push(this.gateways.members.init.bind(this.gateways.members));
+		this.gateways.channels = new TextChannelGateway(this.gateways, 'channels', channelSchema, channels.provider || this.options.providers.default);
+		this.gateways.keys.add('channels');
+		this.gateways._queue.push(this.gateways.channels.init.bind(this.gateways.channels));
 	}
 
 };
