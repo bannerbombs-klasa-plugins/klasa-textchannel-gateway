@@ -1,6 +1,6 @@
 const { Client, Schema, util: { mergeDefault } } = require('klasa');
 const { CLIENT } = require('./util/constants');
-const TextChannelGateway = require('./settings/GatewayTextChannel');
+const TextChannelGateway = require('./settings/TextChannelGateway');
 
 Client.defaultTextChannelSchema = new Schema();
 
