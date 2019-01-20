@@ -1,10 +1,10 @@
 {
-  "name": "klasa-channel-gateway",
+  "name": "klasa-textchannel-gateway",
   "version": "0.0.1-dev",
-  "description": "Klasa Channel Gateway: a simple plugin for the klasa bot framework that adds an efficient per-channel settings gateway.",
+  "description": "Klasa TextChannel Gateway: a simple plugin for the klasa bot framework that adds an efficient per-textchannel settings gateway.",
   "homepage": "https://klasa.js.org/",
   "bugs": {
-    "url": "https://github.com/bannerbombs-klasa-plugins/klasa-channel-gateway/issues"
+    "url": "https://github.com/bannerbombs-klasa-plugins/klasa-textchannel-gateway/issues"
   },
   "license": "MIT",
   "author": "BannerBomb",
@@ -12,7 +12,7 @@
   "types": "typings/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bannerbombs-klasa-plugins/klasa-channel-gateway.git"
+    "url": "https://github.com/bannerbombs-klasa-plugins/klasa-textchannel-gateway.git"
   },
   "scripts": {
     "lint": "npx eslint --fix src && npx eslint --fix --config .eslintrcmd.json --ext md guides && npx tslint --fix 'typings/*.ts'",
