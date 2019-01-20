@@ -1,18 +1,18 @@
 {
-  "name": "klasa-member-gateway",
+  "name": "klasa-channel-gateway",
   "version": "0.0.1-dev",
-  "description": "Klasa Member Gateway: a simple plugin for the klasa bot framework that adds an efficient per-member settings gateway.",
+  "description": "Klasa Channel Gateway: a simple plugin for the klasa bot framework that adds an efficient per-channel settings gateway.",
   "homepage": "https://klasa.js.org/",
   "bugs": {
-    "url": "https://github.com/dirigeants/klasa-member-gateway/issues"
+    "url": "https://github.com/bannerbombs-klasa-plugins/klasa-channel-gateway/issues"
   },
   "license": "MIT",
-  "author": "Dirigeants",
+  "author": "BannerBomb",
   "main": "src/index.js",
   "types": "typings/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dirigeants/klasa-member-gateway.git"
+    "url": "https://github.com/bannerbombs-klasa-plugins/klasa-channel-gateway.git"
   },
   "scripts": {
     "lint": "npx eslint --fix src && npx eslint --fix --config .eslintrcmd.json --ext md guides && npx tslint --fix 'typings/*.ts'",
