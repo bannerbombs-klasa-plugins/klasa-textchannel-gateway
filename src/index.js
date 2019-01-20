@@ -1,8 +1,8 @@
 const { Client: { plugin } } = require('klasa');
 
 module.exports = {
-	KlasaMember: require('./lib/extensions/KlasaMember'),
-	MemberGateway: require('./lib/settings/MemberGateway'),
+	KlasaTextChannel: require('./lib/extensions/KlasaTextChannel'),
+	TextChannelGateway: require('./lib/settings/TextChannelGateway'),
 	Client: require('./lib/Client'),
 	[plugin]: require('./lib/Client')[plugin]
 };
