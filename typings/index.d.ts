@@ -1,7 +1,7 @@
-declare module 'klasa-member-gateway' {
+declare module 'klasa-textchannel-gateway' {
 
 	import {
-		GuildMember,
+		TextChannel,
 		Snowflake,
 		Collection
 	} from 'discord.js';
@@ -16,18 +16,18 @@ declare module 'klasa-member-gateway' {
 		GatewayGetPathResult
 	} from 'klasa';
 
-	class MemberGatewayClient extends Client {
-		public static defaultMembersSchema: Schema;
+	class TextChannelGatewayClient extends Client {
+		public static defaultTextChannelsSchema: Schema;
 	}
 
-	export { MemberGatewayClient as Client };
+	export { TextChannelGatewayClient as Client };
 
-	export class KlasaMember extends GuildMember {
+	export class KlasaTextChannel extends TextChannel {
 		public settings: Settings;
-		public toJSON(): KlasaMemberJSON;
+		public toJSON(): KlasaTextChannelJSON;
 	}
 
-	export class MemberGateway extends GatewayStorage {
+	export class TextChannelGateway extends GatewayStorage {
 		public store: GatewayDriver;
 		public syncQueue: Collection<string, Promise<Settings>>;
 		public readonly Settings: Settings;
@@ -40,15 +40,10 @@ declare module 'klasa-member-gateway' {
 		public sync(input?: string[]): Promise<this>;
 	}
 
-	export type KlasaMemberJSON = {
+	export type KlasaTextChannelJSON = {
 		guildID: Snowflake;
-		userID: Snowflake;
-		joinedTimestamp: number;
-		lastMessageChannelID?: Snowflake;
+		channelID: Snowflake;
 		deleted: boolean;
-		nickname?: string;
-		displayName: string;
-		roles: Array<Snowflake>;
 		settings: Settings;
 	};
 }
