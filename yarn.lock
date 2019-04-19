@@ -1191,8 +1191,8 @@ dmd@^3.0.10:
 
 "docgen@github:dirigeants/docsgen":
   version "0.0.1"
-  uid "7d8e5c27692e4617ce44cd1222994cb49437102d"
-  resolved "https://codeload.github.com/dirigeants/docsgen/tar.gz/7d8e5c27692e4617ce44cd1222994cb49437102d"
+  uid e909e29a7e2403ca4bf83bc0d551833abcf318ae
+  resolved "https://codeload.github.com/dirigeants/docsgen/tar.gz/e909e29a7e2403ca4bf83bc0d551833abcf318ae"
   dependencies:
     ava "^1.4.1"
     fs-nextra "^0.4.5"
