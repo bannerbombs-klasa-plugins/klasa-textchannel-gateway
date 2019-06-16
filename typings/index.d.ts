@@ -17,7 +17,7 @@ declare module 'klasa-textchannel-gateway' {
 	} from 'klasa';
 
 	class TextChannelGatewayClient extends Client {
-		public static defaultTextChannelsSchema: Schema;
+		public static defaultTextChannelSchema: Schema;
 	}
 
 	export { TextChannelGatewayClient as Client };
