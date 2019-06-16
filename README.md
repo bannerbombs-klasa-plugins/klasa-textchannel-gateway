@@ -1,3 +1,5 @@
+This is the repository for the original klasa-textchannel-gateway package.
+
 # klasa-textchannel-gateway
 
 Simple plugin to manage an efficient per-textchannel settings gateway.
