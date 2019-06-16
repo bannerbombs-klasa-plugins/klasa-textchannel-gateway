@@ -19,7 +19,7 @@ module.exports = Structures.extend('TextChannel', TextChannel => {
 			super(...args);
 
 			/**
-			 * The member level settings for this context (channel || default)
+			 * The channel level settings for this context (channel || default)
 			 * @since 0.0.1
 			 * @type {external:Settings}
 			 */
