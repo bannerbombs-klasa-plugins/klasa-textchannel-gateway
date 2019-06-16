@@ -1,6 +1,8 @@
 const { Client: { plugin } } = require('klasa');
 
 module.exports = {
+	KlasaGuild: require('./lib/extensions/KlasaGuild'),
+	KlasaChannelStore: require('./lib/extensions/KlasaChannelStore'),
 	KlasaTextChannel: require('./lib/extensions/KlasaTextChannel'),
 	TextChannelGateway: require('./lib/settings/TextChannelGateway'),
 	Client: require('./lib/Client'),
@@ -8,8 +10,16 @@ module.exports = {
 };
 
 /**
- * @external GuildMember
- * @see {@link https://discord.js.org/#/docs/main/master/class/GuildMember}
+ * @external Guild
+ * @see {@link https://discord.js.org/#/docs/main/master/class/Guild}
+ */
+/**
+ * @external ChannelStore
+ * @see {@link https://discord.js.org/#/docs/main/master/class/ChannelStore}
+ */
+/**
+ * @external TextChannel
+ * @see {@link https://discord.js.org/#/docs/main/master/class/TextChannel}
  */
 /**
  * @external Settings
