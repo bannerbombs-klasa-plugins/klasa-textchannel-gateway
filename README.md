@@ -1,3 +1,5 @@
+# Check the [Settings Branch](https://github.com/bannerbombs-klasa-plugins/klasa-textchannel-gateway/tree/settings) for an up-to-date version.
+
 This is the repository for the original klasa-textchannel-gateway package.
 
 # klasa-textchannel-gateway
