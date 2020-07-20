@@ -65,7 +65,7 @@ class TextChannelGateway extends GatewayStorage {
 
 		const guild = this.client.guilds.cache.get(guildID);
 		if (guild) {
-			const channel = guild.channels.cache.filter((c) => ['text'].includes(c.type)).get(channelID);
+			const channel = guild.channels.cache.filter((channel) => ['text'].includes(channel.type)).get(channelID);
 			return channel && channel.settings;
 		}
 
@@ -114,7 +114,7 @@ class TextChannelGateway extends GatewayStorage {
 			}
 
 			for (const guild of this.client.guilds.cache.values()) {
-				for (const channel of guild.channels.cache.values()) if (channel.settings.existenceStatus === null) channel.settings.existenceStatus = false;
+				for (const channel of guild.channels.cache.filter((channel) => ['text'].includes(channel.type)).values()) if (channel.settings.existenceStatus === null) channel.settings.existenceStatus = false;
 			}
 			return this;
 		}
