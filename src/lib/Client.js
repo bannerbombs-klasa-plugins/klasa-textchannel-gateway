@@ -12,13 +12,11 @@ module.exports = class extends Client {
 	}
 
 	static [Client.plugin]() {
-		mergeDefault(CLIENT, this.options);
-		const { channels } = this.options.gateways;
-		const channelSchema = 'schema' in channels ? channels.schema : this.constructor.defaultTextChannelSchema;
+		mergeDefault(CLIENT, this.options.settings);
 
-		this.gateways.channels = new TextChannelGateway(this.gateways, 'channels', channelSchema, channels.provider || this.options.providers.default);
-		this.gateways.keys.add('channels');
-		this.gateways._queue.push(this.gateways.channels.init.bind(this.gateways.channels));
+		const { channels } = this.options.settings.gateways;
+		channels.schema = 'schema' in channels ? channels.schema : this.constructor.defaultTextChannelSchema;
+		this.gateways.register(new TextChannelGateway(this, 'channels', channels));
 	}
 
 };
