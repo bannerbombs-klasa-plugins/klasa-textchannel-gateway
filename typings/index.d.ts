@@ -10,10 +10,7 @@ declare module 'klasa-textchannel-gateway' {
 		Schema,
 		Settings,
 		GatewayStorage,
-		GatewayDriver,
-		GuildResolvable,
-		GatewayGetPathOptions,
-		GatewayGetPathResult
+		GatewayDriver
 	} from 'klasa';
 
 	class TextChannelGatewayClient extends Client {
@@ -21,11 +18,6 @@ declare module 'klasa-textchannel-gateway' {
 	}
 
 	export { TextChannelGatewayClient as Client };
-
-	export class KlasaTextChannel extends TextChannel {
-		public settings: Settings;
-		public toJSON(): KlasaTextChannelJSON;
-	}
 
 	export class TextChannelGateway extends GatewayStorage {
 		public store: GatewayDriver;
@@ -40,10 +32,18 @@ declare module 'klasa-textchannel-gateway' {
 		public sync(input?: string[]): Promise<this>;
 	}
 
-	export type KlasaTextChannelJSON = {
-		guildID: Snowflake;
-		channelID: Snowflake;
-		deleted: boolean;
+}
+
+declare module 'discord.js' {
+
+	import { Schema, Settings } from 'klasa';
+
+	export interface TextChannel {
 		settings: Settings;
-	};
+	}
+						       
+	export namespace Client {
+		export let defaultTextChannelSchema: Schema;
+	}
+
 }
