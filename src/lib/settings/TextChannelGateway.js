@@ -1,5 +1,5 @@
 const { GatewayStorage, Settings, util: { getIdentifier } } = require('klasa');
-const { Collection } = require('discord.js');
+const { RequestHandler } = require('@klasa/request-handler');
 
 /**
  * The Gateway class that manages the data input, parsing, and output, of an entire database, while keeping a cache system sync with the changes.
@@ -9,27 +9,19 @@ class TextChannelGateway extends GatewayStorage {
 
 	/**
 	 * @since 0.0.1
-	 * @param {GatewayDriver} store The GatewayDriver instance which initiated this instance
-	 * @param {string} type The name of this Gateway
-	 * @param {external:Schema} schema The schema for this gateway
-	 * @param {string} provider The provider's name for this gateway
+	 * @param {external:KlasaClient} client The KlasaClient instance which initiated this instance
+	 * @param {string} name The name of this Gateway
+	 * @param {external:GatewayOptions} [options = {}] The options for this gateway
 	 */
-	constructor(store, type, schema, provider) {
-		super(store.client, type, schema, provider);
-
-		/**
-		 * The GatewayDriver that manages this Gateway
-		 * @since 0.0.1
-		 * @type {external:GatewayDriver}
-		 */
-		this.store = store;
+	constructor(client, name, options) {
+		super(client, name, options);
 
 		/**
 		 * The synchronization queue for all Settings instances
 		 * @since 0.0.1
-		 * @type {external:Collection<string, Promise<external:Settings>>}
+		 * @type {WeakMap<string, Promise<external:Settings>>}
 		 */
-		this.syncQueue = new Collection();
+		this.requestHandler = new RequestHandler(id => this.provider.get(this.name, id), ids => this.provider.getAll(this.name, ids));
 
 		/**
 		 * @since 0.0.1
@@ -40,17 +32,6 @@ class TextChannelGateway extends GatewayStorage {
 	}
 
 	/**
-	 * The Settings that this class should make.
-	 * @since 0.0.1
-	 * @type {external:Settings}
-	 * @readonly
-	 * @private
-	 */
-	get Settings() {
-		return Settings;
-	}
-
-	/**
 	 * The ID length for all entries.
 	 * @since 0.0.1
 	 * @type {number}
@@ -58,14 +39,25 @@ class TextChannelGateway extends GatewayStorage {
 	 * @private
 	 */
 	get idLength() {
-		// 18 + 1 + 18: `{GUILDID}.{TEXTCHANNELID}`
+		// 18 + 1 + 18: `{MEMBERID}.{GUILDID}`
 		return 37;
+	}
+
+	/**
+	 * Gets an entry from the cache or creates one if it does not exist
+	 * @since 0.5.0
+	 * @param {string|string[]} id The id for this instance
+	 * @param {*} target The target that holds a Settings instance of the holder for the new one
+	 * @returns {external:Settings}
+	 */
+	acquire(id, target) {
+		return this.get(id) || this.create(id, target);
 	}
 
 	/**
 	 * Get a Settings entry from this gateway
 	 * @since 0.0.1
-	 * @param {string|string[]} id The id for this instance
+	 * @param {string|string[]} id The id for the instance to retrieve
 	 * @returns {?external:Settings}
 	 */
 	get(id) {
@@ -73,7 +65,7 @@ class TextChannelGateway extends GatewayStorage {
 
 		const guild = this.client.guilds.cache.get(guildID);
 		if (guild) {
-			const channel = guild.channels.cache.filter((channel) => ['text'].includes(channel.type)).get(channelID);
+			const channel = guild.channels.cache.filter((c) => ['text'].includes(c.type)).get(channelID);
 			return channel && channel.settings;
 		}
 
@@ -84,15 +76,16 @@ class TextChannelGateway extends GatewayStorage {
 	 * Create a new Settings for this gateway
 	 * @since 0.0.1
 	 * @param {string|string[]} id The id for this instance
-	 * @param {Object<string, *>} [data={}] The data for this Settings instance
+	 * @param {any} target The holder for this Settings instance
 	 * @returns {external:Settings}
 	 */
-	create(id, data = {}) {
+	create(id, target) {
 		const [guildID, channelID] = typeof id === 'string' ? id.split('.') : id;
+
 		const entry = this.get([guildID, channelID]);
 		if (entry) return entry;
 
-		const settings = new this.Settings(this, { id: `${guildID}.${channelID}`, ...data });
+		const settings = new Settings(this, target, `${guildID}.${channelID}`);
 		if (this._synced) settings.sync();
 		return settings;
 	}
@@ -101,26 +94,27 @@ class TextChannelGateway extends GatewayStorage {
 	 * Sync either all entries from the cache with the persistent database, or a single one.
 	 * @since 0.0.1
 	 * @param {(Array<string>|string)} [input=Array<string>] An object containing a id property, like discord.js objects, or a string
-	 * @returns {?(ChannelGateway|external:Settings)}
+	 * @returns {?(TextChannelGateway|external:Settings)}
 	 */
-	async sync(input = this.client.guilds.cache.reduce((keys, guild) => keys.concat(guild.channels.cache.filter((channel) => ['text'].includes(channel.type)).map((channel) => channel.settings.id)), [])) {
+	async sync(input) {
+		// If the schema is empty, there's no point in running sync ops
+		if (!this.schema.size) return this;
+		if (typeof input === 'undefined') input = this.client.guilds.cache.reduce((keys, guild) => keys.concat(guild.channels.cache.filter((channel) => ['text'].includes(channel.type)).map(channel => channel.settings.id)), []);
 		if (Array.isArray(input)) {
-			if (!this._synced) this._synced = true;
-			const entries = await this.provider.getAll(this.type, input);
+			this._synced = true;
+			const entries = await this.provider.getAll(this.name, input);
 			for (const entry of entries) {
 				if (!entry) continue;
-
-				// Get the entry from the cache
 				const cache = this.get(entry.id);
-				if (!cache) continue;
-
-				cache._existsInDB = true;
-				cache._patch(entry);
+				if (cache) {
+					cache.existenceStatus = true;
+					cache._patch(entry);
+					this.client.emit('settingsSync', cache);
+				}
 			}
 
-			// Set all the remaining settings from unknown status in DB to not exists.
-			for (const guild of this.client.guilds.cache.values()) {
-				for (const channel of guild.channels.cache.filter((channel) => ['text'].includes(channel.type)).values()) if (channel.settings._existsInDB !== true) channel.settings._existsInDB = false;
+			for (const guild of this.client.channels.cache.values()) {
+				for (const channel of guild.channels.cache.values()) if (channel.settings.existenceStatus === null) channel.settings.existenceStatus = false;
 			}
 			return this;
 		}
@@ -129,9 +123,8 @@ class TextChannelGateway extends GatewayStorage {
 		if (!target) throw new TypeError('The selected target could not be resolved to a string.');
 
 		const cache = this.get(target);
-		return cache ? cache.sync() : null;
+		return cache ? cache.sync(true) : null;
 	}
-
 }
 
 module.exports = TextChannelGateway;
