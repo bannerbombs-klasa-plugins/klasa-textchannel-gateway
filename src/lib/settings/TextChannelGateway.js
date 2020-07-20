@@ -113,7 +113,7 @@ class TextChannelGateway extends GatewayStorage {
 				}
 			}
 
-			for (const guild of this.client.channels.cache.values()) {
+			for (const guild of this.client.guilds.cache.values()) {
 				for (const channel of guild.channels.cache.values()) if (channel.settings.existenceStatus === null) channel.settings.existenceStatus = false;
 			}
 			return this;
