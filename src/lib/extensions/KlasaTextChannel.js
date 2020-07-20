@@ -1,15 +1,15 @@
 const { Structures } = require('discord.js');
 
-module.exports = Structures.extend('TextChannel', TextChannel => {
+module.exports = Structures.extend('TextChannel', Channel => {
 	/**
-	 * Klasa's Extended TextChannel
-	 * @extends external:TextChannel
+	 * Klasa's Extended GuildMember
+	 * @extends external:GuildMember
 	 */
-	class KlasaTextChannel extends TextChannel {
+	class TextChannel extends Channel {
 
 		/**
-		 * @typedef {external:TextChannelJSON} TextChannelJSON
-		 * @property {external:SettingsJSON} settings The per channel settings
+		 * @typedef {external:GuildMemberJSON} KlasaMemberJSON
+		 * @property {external:SettingsJSON} settings The per member settings
 		 */
 
 		/**
@@ -19,23 +19,23 @@ module.exports = Structures.extend('TextChannel', TextChannel => {
 			super(...args);
 
 			/**
-			 * The channel level settings for this context (channel || default)
+			 * The member level settings for this context (member || default)
 			 * @since 0.0.1
 			 * @type {external:Settings}
 			 */
-			this.settings = this.client.gateways.channels.create([this.guild.id, this.id]);
+			this.settings = this.client.gateways.get('channels').acquire([this.guild.id, this.id], this);
 		}
 
 		/**
 		 * Returns the JSON-compatible object of this instance.
 		 * @since 0.5.0
-		 * @returns {KlasaChannelJSON}
+		 * @returns {KlasaMemberJSON}
 		 */
 		toJSON() {
-			return { ...super.toJSON(), settings: this.settings };
+			return { ...super.toJSON(), settings: this.settings.toJSON() };
 		}
 
 	}
 
-	return KlasaTextChannel;
+	return TextChannel;
 });
